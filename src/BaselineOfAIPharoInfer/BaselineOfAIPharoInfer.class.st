@@ -11,5 +11,7 @@ BaselineOfAIPharoInfer >> baseline: spec [
 	<baseline>
 	spec for: #common do: [
 			spec package: 'AI-PharoInfer'.
+			spec package: #'AI-PharoInfer-Tests' with: [
+				spec requires: #('AI-PharoInfer' ) ].
 	  ]
 ]
