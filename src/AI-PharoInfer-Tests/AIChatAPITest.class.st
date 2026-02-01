@@ -32,7 +32,8 @@ AIChatAPITest >> setUp [
 { #category : 'running' }
 AIChatAPITest >> tearDown [
 
-	testModel path ensureDelete.
+	testModel ifNotNil: [
+		testModel path ifNotNil: [ testModel path ensureDelete ] ].
 	super tearDown
 ]
 

@@ -23,7 +23,8 @@ AIEmbeddingsGeneratorTest >> setUp [
 
 { #category : 'running' }
 AIEmbeddingsGeneratorTest >> tearDown [
-	testModel path ensureDelete.
+	testModel ifNotNil: [
+		testModel path ifNotNil: [ testModel path ensureDelete ] ].
 	super tearDown
 ]
 
