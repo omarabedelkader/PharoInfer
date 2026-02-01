@@ -1,6 +1,6 @@
 Class {
 	#name : 'AILlamaCppBackend',
-	#superclass : 'Object',
+	#superclass : 'AIBackend',
 	#instVars : [
 		'serverUrl',
 		'client',
