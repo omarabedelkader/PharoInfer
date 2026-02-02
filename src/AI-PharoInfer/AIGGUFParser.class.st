@@ -321,15 +321,13 @@ AIGGUFParser >> readValue: valueType [
 	valueType = 3 ifTrue: [ ^ self readInt16 ].
 	valueType = 4 ifTrue: [ ^ self readUInt32 ].
 	valueType = 5 ifTrue: [ ^ self readInt32 ].
-	valueType = 6 ifTrue: [ ^ self readUInt64 ].
-	valueType = 7 ifTrue: [ ^ self readInt64 ].
-	valueType = 8 ifTrue: [ ^ self readFloat32 ].
-	valueType = 9 ifTrue: [ ^ self readFloat64 ].
-	valueType = 10 ifTrue: [ ^ self readUInt8 ~= 0 ].  "BOOL"
-	valueType = 11 ifTrue: [ ^ self readString ].
-	valueType = 12 ifTrue: [ ^ self readArray ].
-
-	Error signal: 'Unknown GGUF value type: ', valueType asString
+	valueType = 6 ifTrue: [ ^ self readFloat32 ].
+	valueType = 7 ifTrue: [ ^ self readUInt8 ~= 0 ].  "BOOL"
+	valueType = 8 ifTrue: [ ^ self readString ].
+	valueType = 9 ifTrue: [ ^ self readArray ].
+	valueType = 10 ifTrue: [ ^ self readUInt64 ].
+	valueType = 11 ifTrue: [ ^ self readInt64 ].
+	valueType = 12 ifTrue: [ ^ self readFloat64 ].
 ]
 
 { #category : 'as yet unclassified' }

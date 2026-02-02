@@ -21,6 +21,7 @@ AIInferenceEngine class >> default [
 { #category : 'accessing' }
 AIInferenceEngine class >> reset [
 
+	<script>
 	default := nil
 ]
 
