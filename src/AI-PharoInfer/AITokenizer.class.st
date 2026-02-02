@@ -84,7 +84,7 @@ AITokenizer >> initialize [
 
 	super initialize.
 	vocabulary := self initializeVocabulary.
-	specialTokens := self initializeSpecialTokens
+	self updateSpecialTokens
 ]
 
 { #category : 'accessing' }
@@ -235,6 +235,14 @@ AITokenizer >> unkToken: anObject [
 ]
 
 { #category : 'accessing' }
+AITokenizer >> updateSpecialTokens [
+
+	"Update special tokens dictionary"
+
+	specialTokens := self initializeSpecialTokens
+]
+
+{ #category : 'accessing' }
 AITokenizer >> vocabulary [
 
 	^ vocabulary
@@ -243,12 +251,13 @@ AITokenizer >> vocabulary [
 { #category : 'accessing' }
 AITokenizer >> vocabulary: anObject [
 
-	vocabulary := anObject
+	vocabulary := anObject.
+	self updateSpecialTokens
 ]
 
 { #category : 'accessing' }
 AITokenizer >> vocabularySize [
 
-	"Return the size of the vocabulary"
-	^ vocabulary size + specialTokens size
+	"For loaded vocabularies (e.g., from GGUF), special tokens are already included"
+	^ vocabulary size max: (specialTokens values max + 1)
 ]

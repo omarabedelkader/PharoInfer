@@ -120,10 +120,48 @@ AILocalBackend >> loadModel: aModel [
 AILocalBackend >> loadModelData: aModel [
 
 	"Load model data from file (simplified implementation)"
-	| data |
+	| data parser tokenizerData vocab |
 
 	aModel path exists ifFalse: [
 		Error signal: 'Model file not found: ', aModel path fullName ].
+	
+	
+	"Parse GGUF file if format is GGUF"
+	aModel format = 'gguf' ifTrue: [
+		parser := AIGGUFParser parseFile: aModel path.
+		tokenizerData := parser tokenizerData.
+
+		"Build vocabulary from tokens array"
+		vocab := Dictionary new.
+		(tokenizerData at: 'tokens' ifAbsent: [ #() ]) withIndexDo: [ :token :index |
+			"GGUF uses 0-based indexing"
+			vocab at: token put: (index - 1) ].
+
+		"Create new tokenizer with loaded vocabulary"
+		tokenizer := AITokenizer new.
+		tokenizer vocabulary: vocab.
+
+		"Set special tokens if available"
+		(tokenizerData at: 'bos_token_id' ifAbsent: [ nil ]) ifNotNil: [ :id |
+			tokenizer bosToken: id ].
+		(tokenizerData at: 'eos_token_id' ifAbsent: [ nil ]) ifNotNil: [ :id |
+			tokenizer eosToken: id ].
+		(tokenizerData at: 'pad_token_id' ifAbsent: [ nil ]) ifNotNil: [ :id |
+			tokenizer padToken: id ].
+		(tokenizerData at: 'unk_token_id' ifAbsent: [ nil ]) ifNotNil: [ :id |
+			tokenizer unkToken: id ].
+
+		"Store model data"
+		data := Dictionary new.
+		data at: 'path' put: aModel path.
+		data at: 'format' put: aModel format.
+		data at: 'loaded_at' put: DateAndTime now.
+		data at: 'vocabulary' put: vocab.
+		data at: 'metadata' put: parser metadata.
+
+		^ data ].
+	
+	
 
 	"In a real implementation, this would parse GGUF/safetensors format"
 	data := Dictionary new.
