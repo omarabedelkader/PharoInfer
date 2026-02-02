@@ -21,7 +21,7 @@ AIModelManager class >> default [
 
 { #category : 'accessing' }
 AIModelManager class >> reset [
-
+	<Script>
 	default := nil
 ]
 
