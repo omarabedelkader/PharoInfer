@@ -12,16 +12,21 @@ Class {
 { #category : 'private' }
 AILocalBackend >> computeEmbeddings: tokens for: aModel [
 
+
 	"Compute embeddings for tokens (simplified implementation)"
-	| modelData embedding |
+	| modelData embedding dimensions |
 
 	modelData := loadedModels at: aModel name.
+	dimensions := 768.
 
-	"Generate a simple embedding (in a real implementation, this would use the model's embedding layer)"
-	embedding := tokens collect: [ :token |
-		| vector |
-		vector := Array new: 768 withAll: (token hash / 1000.0).
-		vector ].
+	"Generate a single embedding vector by averaging token embeddings"
+	"In a real implementation, this would use the model's embedding layer and pooling"
+	embedding := Array new: dimensions.
+	1 to: dimensions do: [ :i |
+		| sum |
+		sum := tokens inject: 0 into: [ :acc :token |
+			acc + (token hash + i) ].
+		embedding at: i put: (sum / (tokens size * 1000.0)) ].
 
 	^ embedding
 ]

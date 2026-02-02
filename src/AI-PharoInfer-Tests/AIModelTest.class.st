@@ -40,7 +40,7 @@ AIModelTest >> testLoadAndUnload [
 
 	| model backend |
 
-	backend := AILocalBackend new.
+	backend := AIMockBackend new.
 	model := AIModel named: 'test-model'.
 	model backend: backend.
 	model path: (FileLocator temp / 'test.gguf').

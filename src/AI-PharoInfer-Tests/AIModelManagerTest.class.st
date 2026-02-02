@@ -65,7 +65,7 @@ AIModelManagerTest >> testLoadModel [
 	file ensureCreateFile.
 
 	[ model := AIModel fromFile: file.
-	model backend: AILocalBackend new.
+	model backend: AIMockBackend new.
 	manager registerModel: model.
 
 	manager loadModel: 'test-load-model'.
@@ -96,9 +96,9 @@ AIModelManagerTest >> testUnloadAll [
 	file2 ensureCreateFile.
 
 	[ model1 := AIModel fromFile: file1.
-	model1 backend: AILocalBackend new.
+	model1 backend: AIMockBackend new.
 	model2 := AIModel fromFile: file2.
-	model2 backend: AILocalBackend new.
+	model2 backend: AIMockBackend new.
 
 	manager registerModel: model1.
 	manager registerModel: model2.
