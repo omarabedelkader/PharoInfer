@@ -3,6 +3,7 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'vocabulary',
+		'reverseVocabulary',
 		'specialTokens',
 		'bosToken',
 		'eosToken',
@@ -27,6 +28,16 @@ AITokenizer >> bosToken: anObject [
 ]
 
 { #category : 'accessing' }
+AITokenizer >> buildReverseVocabulary [
+
+	"Build reverse vocabulary (ID -> string) from vocabulary (string -> ID)"
+
+	reverseVocabulary := Dictionary new.
+	vocabulary keysAndValuesDo: [ :string :id |
+		reverseVocabulary at: id put: string ]
+]
+
+{ #category : 'accessing' }
 AITokenizer >> decode: tokens [
 
 	"Decode tokens back to text"
@@ -45,17 +56,15 @@ AITokenizer >> decode: tokens [
 { #category : 'accessing' }
 AITokenizer >> decodeToken: token [
 
-	"Decode a single token to text"
-
 	"Special tokens"
-	token = self bosToken ifTrue: [ ^ '<BOS>' ].
-	token = self eosToken ifTrue: [ ^ '<EOS>' ].
-	token = self padToken ifTrue: [ ^ '<PAD>' ].
+	token = self bosToken ifTrue: [ ^ '' ].
+	token = self eosToken ifTrue: [ ^ '' ].
+	token = self padToken ifTrue: [ ^ '' ].
 	token = self unkToken ifTrue: [ ^ '<UNK>' ].
 
-	"Look up in vocabulary"
-	^ self vocabulary
-		keyAtValue: token
+	"Look up in reverse vocabulary (ID -> string)"
+	^ self reverseVocabulary
+		at: token
 		ifAbsent: [ '<UNK>' ]
 ]
 
@@ -175,6 +184,18 @@ AITokenizer >> padToken: anObject [
 ]
 
 { #category : 'accessing' }
+AITokenizer >> reverseVocabulary [
+
+	^ reverseVocabulary
+]
+
+{ #category : 'accessing' }
+AITokenizer >> reverseVocabulary: anObject [
+
+	reverseVocabulary := anObject
+]
+
+{ #category : 'accessing' }
 AITokenizer >> specialTokens [
 
 	^ specialTokens
@@ -252,6 +273,7 @@ AITokenizer >> vocabulary [
 AITokenizer >> vocabulary: anObject [
 
 	vocabulary := anObject.
+	self buildReverseVocabulary.
 	self updateSpecialTokens
 ]
 

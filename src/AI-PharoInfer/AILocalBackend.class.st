@@ -250,7 +250,8 @@ AILocalBackend >> sampleToken: logits options: options [
 	"Sample from distribution (simplified - should implement top-p/top-k)"
 	sampledIdx := self sampleFromDistribution: probs.
 
-	^ sampledIdx
+	"Convert 1-based array index to 0-based token ID (GGUF convention)"
+	^ sampledIdx - 1
 ]
 
 { #category : 'private' }
