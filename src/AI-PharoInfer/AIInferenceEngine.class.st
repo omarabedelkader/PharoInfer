@@ -28,7 +28,18 @@ AIInferenceEngine class >> reset [
 { #category : 'accessing' }
 AIInferenceEngine >> backend [
 
-	^ backend ifNil: [ backend := AILocalBackend new ]
+	^ backend ifNil: [ backend := self createDefaultBackend ]
+]
+
+{ #category : 'private' }
+AIInferenceEngine >> createDefaultBackend [
+	"Create the default backend. Prefer AILlamaCppBackend if llama.cpp is available."
+
+	"Try to create AILlamaCppBackend first"
+	[ ^ AILlamaCppBackend new ] on: Error do: [ :ex |
+		"Fall back to local backend if llama.cpp not available" ].
+
+	^ AILocalBackend new
 ]
 
 { #category : 'accessing' }
@@ -48,16 +59,23 @@ AIInferenceEngine >> complete: prompt model: modelName [
 AIInferenceEngine >> complete: prompt model: modelName options: options [
 
 	"Generate text completion with custom options"
-	| model result |
+	| model result effectiveBackend |
 
 	model := self resolveModelNamed: modelName.
 	model ifNil: [
 		Error signal: 'Model not found: ', modelName ].
 
+	"Use model's backend if set, otherwise use engine's backend"
+	effectiveBackend := model backend ifNil: [ self backend ].
+
+	"Ensure backend is set on model for loading"
+	model backend ifNil: [ model backend: effectiveBackend ].
+
 	model isLoaded ifFalse: [
 		model load ].
 
-	result := self backend generateText: prompt model: model options: options.
+	"Use the same backend that loaded the model for generation"
+	result := effectiveBackend generateText: prompt model: model options: options.
 
 	^ result
 ]
@@ -66,16 +84,23 @@ AIInferenceEngine >> complete: prompt model: modelName options: options [
 AIInferenceEngine >> embeddings: text model: modelName [
 
 	"Generate embeddings for the given text"
-	| model result |
+	| model result effectiveBackend |
 
 	model := self resolveModelNamed: modelName.
 	model ifNil: [
 		Error signal: 'Model not found: ', modelName ].
 
+	"Use model's backend if set, otherwise use engine's backend"
+	effectiveBackend := model backend ifNil: [ self backend ].
+
+	"Ensure backend is set on model for loading"
+	model backend ifNil: [ model backend: effectiveBackend ].
+
 	model isLoaded ifFalse: [
 		model load ].
 
-	result := self backend generateEmbeddings: text model: model.
+	"Use the same backend that loaded the model for embeddings"
+	result := effectiveBackend generateEmbeddings: text model: model.
 
 	^ result
 ]
@@ -127,14 +152,21 @@ AIInferenceEngine >> stream: prompt model: modelName onToken: aBlock [
 AIInferenceEngine >> stream: prompt model: modelName options: options onToken: aBlock [
 
 	"Stream text generation with custom options"
-	| model |
+	| model effectiveBackend |
 
 	model := self resolveModelNamed: modelName.
 	model ifNil: [
 		Error signal: 'Model not found: ', modelName ].
 
+	"Use model's backend if set, otherwise use engine's backend"
+	effectiveBackend := model backend ifNil: [ self backend ].
+
+	"Ensure backend is set on model for loading"
+	model backend ifNil: [ model backend: effectiveBackend ].
+
 	model isLoaded ifFalse: [
 		model load ].
 
-	self backend streamText: prompt model: model options: options onToken: aBlock
+	"Use the same backend that loaded the model for streaming"
+	effectiveBackend streamText: prompt model: model options: options onToken: aBlock
 ]

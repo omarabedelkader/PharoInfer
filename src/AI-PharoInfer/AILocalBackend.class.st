@@ -1,18 +1,23 @@
 "
+AILocalBackend is a MOCK/DEMO implementation of AIBackend.
+
+WARNING: This backend generates RANDOM tokens and will produce GARBAGE output!
+It is only useful for testing the tokenizer and pipeline structure.
+
+For REAL inference, use AILlamaCppBackend which interfaces with llama.cpp:
+
 ```
-| manager engine model |
-manager := AIModelManager default.
-
-""Use AILlamaCppBackend instead of AILocalBackend""
-manager currentBackend: AILlamaCppBackend new.
-
-model := manager loadModel: (FileLocator home / 'Desktop' / 'small.gguf') fullName.
+| model engine |
+model := AIModel fromFile: '/path/to/model.gguf' asFileReference.
+model backend: AILlamaCppBackend new.
+AIModelManager default registerModel: model.
 
 engine := AIInferenceEngine default.
-engine backend: manager currentBackend.
-
-engine complete: 'Hello World !' model: model name.
+engine complete: 'Hello World!' model: model name.
 ```
+
+Note: AILlamaCppBackend requires libllama.so/libllama.dylib to be installed.
+Install llama.cpp from https://github.com/ggerganov/llama.cpp
 
 "
 Class {
@@ -90,8 +95,17 @@ AILocalBackend >> generateEmbeddings: text model: aModel [
 
 { #category : 'private' }
 AILocalBackend >> generateText: prompt model: aModel options: options [
-	"Generate text from a prompt using local inference"
+	"Generate text from a prompt using local inference.
+
+	WARNING: AILocalBackend is a MOCK implementation that generates RANDOM tokens.
+	For real inference, use AILlamaCppBackend which interfaces with llama.cpp.
+
+	Example:
+		model backend: AILlamaCppBackend new."
 	| tokens result |
+
+	"Warn about mock implementation"
+	Transcript crShow: 'WARNING: AILocalBackend generates random output. Use AILlamaCppBackend for real inference.'.
 
 	self ensureModelLoaded: aModel.
 
